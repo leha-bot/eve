@@ -60,3 +60,11 @@ EVE_TEST( "Check behavior of laguerre on wide"
     }
   }
 };
+
+
+  //TODO
+  // as there is no available closed formule for laguerre derivative at the first order
+  // will use vand algo as soon as complex will be available ie:
+  //     complex<T> cx = {x, eps(as(x))};
+  //     return = imag(laguerre(cx))/eps(as(x));
+  // and will betested in time

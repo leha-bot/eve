@@ -15,49 +15,253 @@
 #include <eve/detail/skeleton_calls.hpp>
 #include <eve/function/derivative.hpp>
 #include <eve/function/pedantic/fma.hpp>
+#include <eve/function/regular.hpp>
+#include <eve/module/real/polynomial/detail/diff_horner_impl.hpp>
 
 namespace eve::detail
 {
 
-  template<value T0, value T1>
+  //================================================================================================
+  //== variadic
+  //================================================================================================
+  template<int N, value T0, value T1>
   EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
-                                        , diff_type<1> const &
+                                        , diff_type<N> const &
                                         , T0 const &, T1 const &) noexcept
-  requires compatible_values<T, U> &&compatible_values<T, V>
   {
-    using r_t = common_compatible_t<T0, T1, T2>;
+    using r_t = common_compatible_t<T0, T1>;
     return zero(as<r_t>());
   }
 
-  template<value T0, value T1, value T2>
+  template<int N, value T0, value T1, value T2>
   EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
-                                        , diff_type<1> const &
-                                        , T0 const &, T1 const &, T2 const &) noexcept
-  requires compatible_values<T, U> &&compatible_values<T, V>
+                                        , diff_type<N> const &
+                                        , T0 const &, T1 const &a, T2 const &) noexcept
   {
     using r_t = common_compatible_t<T0, T1, T2>;
-    return r_t(a);
+    if constexpr(N == 1) return r_t(a);
+    else                 return zero(as<r_t>());
   }
 
-  //================================================================================================
-  //N parameters (((..(a*x+b)*x+c)*x + ..)..)
-  //================================================================================================
-
-  template<value T0,
+  template<auto N,
+           value T0,
            value T1,
            value T2,
            value ...Ts>
            EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
-                                                 , diff_type<1> const &
+                                                 , diff_type<N> const &
                                                  , T0 x, T1 a, T2 b, Ts... args) noexcept
-{
-  using r_t = common_compatible_t<T0, T1, T2, Ts...>;
-  auto phorner = pedantic(horner);
-  auto n = sizeof...(args)+1;
-  r_t that(horner(n*x, a, b));
-  auto next = [x](auto that, auto arg){
-    return horner(--n*x, that, arg);
-  };
-  ((that = next(that, args)),...);
-  return that;
+  {
+    return diff_horner_impl<N>(regular_type(), x, a, b, args...);
+  }
+
+  //================================================================================================
+  //== variadic with one leading parameter
+  //================================================================================================
+  template<auto N, value T0>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , diff_type<N> const &
+                                        , T0 const &
+                                        , callable_one_ const &
+                                        ) noexcept
+  {
+    return zero(as<T0>());
+  }
+
+  template<auto N, decorator D, value T0, value T1>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , diff_type<N> const &
+                                        , T0 const &
+                                        , callable_one_ const &
+                                        , T1 const &) noexcept
+  {
+    using r_t = common_compatible_t<T0, T1>;
+    if constexpr(N == 1) return r_t(1);
+    else                 return zero(as<r_t>());
+  }
+
+  template<auto N, value T0, value T2, value ...Ts>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , diff_type<N> const &
+                                        , T0 x
+                                        , callable_one_ const &
+                                        , T2 b, Ts... args) noexcept
+  {
+    return diff_horner_impl<N>(regular_type(), x, one, b, args...);
+  }
+
+  //================================================================================================
+  //== variadic with decorator
+  //================================================================================================
+  template<auto N, decorator D, value T0, value T1>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , decorated<diff_<N>(D)> const &
+                                        , T0 const &, T1 const &) noexcept
+  {
+    using r_t = common_compatible_t<T0, T1>;
+    return zero(as<r_t>());
+  }
+
+  template<auto N, decorator D, value T0, value T1, value T2>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , decorated<diff_<N>(D)> const &
+                                        , T0 const &, T1 const &a, T2 const &) noexcept
+  {
+    using r_t = common_compatible_t<T0, T1, T2>;
+    if constexpr(N == 1) return r_t(a);
+    else                 return zero(as<r_t>());
+  }
+
+  template<auto N,
+           decorator D,
+           value T0,
+           value T1,
+           value T2,
+           value ...Ts>
+           EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                                 , decorated<diff_<N>(D)> const &
+                                                 , T0 x, T1 a, T2 b, Ts... args) noexcept
+  {
+    return diff_horner_impl<N>(D(), x, a, b, args...);
+  }
+
+  //================================================================================================
+  //== variadic with decorator and one leading parameter
+  //================================================================================================
+  template<auto N, decorator D, value T0>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , decorated<diff_<N>(D)> const &
+                                        , T0 const &
+                                        , callable_one_ const &
+                                        ) noexcept
+  {
+    return zero(as<T0>());
+  }
+
+  template<auto N, decorator D, value T0, value T1>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , decorated<diff_<N>(D)> const &
+                                        , T0 const &
+                                        , callable_one_ const &
+                                        , T1 const &) noexcept
+  {
+    using r_t = common_compatible_t<T0, T1>;
+    if constexpr(N == 1) return r_t(1);
+    else                 return zero(as<r_t>());
+  }
+
+  template<auto N,
+           decorator D,
+           value T0,
+           value T1,
+           value ...Ts>
+           EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                                 , decorated<diff_<N>(D)> const &
+                                                 , T0 const & x
+                                                 , callable_one_ const &
+                                                 , T1 b, Ts... args) noexcept
+  {
+    return diff_horner_impl<N>(D(), x, one, b, args...);
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  //== Ranges
+  /////////////////////////////////////////////////////////////////////////
+  template<value T0,
+           range R>
+           EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                                 , diff_type<1> const &
+                                                 , T0 x, R const &r) noexcept
+  {
+    return diff_horner_impl(regular_type(), x, r);
+  }
+
+  template<value T0,
+           decorator D,
+           range R>
+           EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                                 ,  decorated<diff_<1>(D)> const &
+                                                 , T0 x, R const &r) noexcept
+  {
+    return diff_horner_impl(D(), x, r);
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  //== Ranges with one leading coef
+  /////////////////////////////////////////////////////////////////////////
+  template<value T0,
+           range R>
+           EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                                 , diff_type<1> const &
+                                                 , T0 x
+                                                 , callable_one_ const &
+                                                 , R const &r) noexcept
+  {
+    return diff_horner_impl(regular_type(), x, one, r);
+  }
+
+  template<value T0,
+           decorator D,
+           range R>
+           EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                                 , decorated<diff_<1>(D)> const &
+                                                 , T0 x
+                                                 , callable_one_ const &
+                                                 , R const &r) noexcept
+  {
+    return diff_horner_impl(D(), x, one, r);
+  }
+  /////////////////////////////////////////////////////////////////////////
+  //== Iterators
+  /////////////////////////////////////////////////////////////////////////
+  template<value T0
+           , std::input_iterator IT>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , diff_type<1> const &
+                                        , T0 x
+                                        , IT const &first
+                                        , IT const &last) noexcept
+  {
+    return diff_horner_impl(regular_type(), x, first, last);
+  }
+
+  template<value T0,
+           decorator D,
+           std::input_iterator IT>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        ,  decorated<diff_<1>(D)> const &
+                                        , T0 x
+                                        , IT const &first
+                                        , IT const &last) noexcept
+  {
+    return diff_horner_impl(D(), x, first, last);
+  }
+  /////////////////////////////////////////////////////////////////////////
+  //== Iterators with leading one
+  /////////////////////////////////////////////////////////////////////////
+  template<value T0
+           , std::input_iterator IT>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        , diff_type<1> const &
+                                        , T0 x
+                                        , callable_one_ const &
+                                        , IT const &first
+                                        , IT const &last) noexcept
+  {
+    return diff_horner_impl(regular_type(), x, one, first, last);
+  }
+
+  template<value T0,
+           decorator D,
+           std::input_iterator IT>
+  EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
+                                        ,  decorated<diff_<1>(D)> const &
+                                        , T0 x
+                                        , callable_one_ const &
+                                        , IT const &first
+                                        , IT const &last) noexcept
+  {
+    return diff_horner_impl(D(), x, one, first, last);
+  }
+
 }

@@ -15,6 +15,7 @@
 #include <eve/function/horner.hpp>
 #include <eve/function/numeric/horner.hpp>
 #include <eve/function/pedantic/horner.hpp>
+#include <eve/function/diff/horner.hpp>
 #include <eve/logical.hpp>
 #include <type_traits>
 #include <cmath>
@@ -203,5 +204,4 @@ EVE_TEST( "Check behavior of horner on wide"
     TTS_EQUAL(numeric(horner)(a0, one, tab3.begin(), tab3.end()), (fma)(a0, (fma)(a0, 1, 2), 3));
 
   }
-
 };

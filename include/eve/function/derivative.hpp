@@ -12,6 +12,7 @@
 namespace eve
 {
   struct pedantic_;
+  struct numeric_;
 
   //================================================================================================
   // Function decorator - differential mode
@@ -20,6 +21,11 @@ namespace eve
     template<auto N> static constexpr auto combine( decorated<pedantic_()> const& ) noexcept
     {
       return decorated<diff_(pedantic_)>{};
+    }
+
+    template<auto N> static constexpr auto combine( decorated<numeric_()> const& ) noexcept
+    {
+      return decorated<diff_(numeric_)>{};
     }
   };
 
