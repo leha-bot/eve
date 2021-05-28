@@ -119,11 +119,11 @@ namespace eve::detail
       advance(cur, 1);
       auto dfma = d(fma);
       --n;
-      r_t that(dfma(x, r_t(*first)*n, r_t(*cur)*(n-1)));
+      r_t that(dfma(x, r_t(*first)*n, r_t(*cur)*r_t(n-1)));
       --n;
       for (advance(cur, 1); n >= 2; advance(cur, 1))
       {
-        that = dfma(that, x, r_t(*cur)*--n);
+        that = dfma(that, x, r_t(*cur)*r_t(--n));
       }
       return that;
     }
@@ -177,11 +177,11 @@ namespace eve::detail
     {
       auto dfma = d(fma);
       auto n = sizeof...(args)+1;
-      r_t that(dfma(x, n, (n-1)*r_t(b)));
+      r_t that(dfma(x, r_t(n), r_t(n-1)*r_t(b)));
       --n;
       auto next = [x, &n, dfma](auto that, auto arg){
         --n;
-        return n >= 1 ? dfma(that, x, n*arg) : that;
+        return n >= 1 ? dfma(that, x, r_t(n)*arg) : that;
       };
       ((that = next(that, r_t(args))),...);
       return that;
@@ -243,11 +243,12 @@ namespace eve::detail
   //================================================================================================
   template<decorator D, value T0, range R>
   EVE_FORCEINLINE constexpr auto diff_horner_impl(D const & d
-                                            , T0 xx
-                                            , callable_one_ const &
-                                            , R const & r) noexcept
-  requires (compatible_values<T0, typename R::value_type> && (!simd_value<R>))
+                                                 , T0 x
+                                                 , callable_one_ const &
+                                                 , R const & r) noexcept
+  requires ((compatible_values<T0, typename R::value_type>) && (!simd_value<R>))
   {
-    return diff_horner_impl(d, xx, one, std::begin(r), std::end(r));
+  return diff_horner_impl(d, x, one, std::begin(r), std::end(r));
   }
+
 }

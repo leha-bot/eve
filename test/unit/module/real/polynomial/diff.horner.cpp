@@ -21,6 +21,48 @@
 #include <array>
 #include <vector>
 
+//==================================================================================================
+//== Types tests
+//==================================================================================================
+EVE_TEST_TYPES( "Check return types of dif(horner) on wide"
+        , eve::test::simd::ieee_reals
+        )
+<typename T>(eve::as_<T>)
+{
+ using v_t = eve::element_type_t<T>;
+ using i_t = eve::as_integer_t<v_t>;
+  using eve::horner;
+  using eve::diff;
+  using eve::pedantic;
+  TTS_EXPR_IS( diff(horner)(T(), T())  , T);
+  TTS_EXPR_IS( diff(horner)(T(), T(), T())  , T);
+  TTS_EXPR_IS( diff(horner)(T(), v_t(), v_t())  , T);
+  TTS_EXPR_IS( diff(horner)(T(), v_t(), int())  , T);
+  TTS_EXPR_IS( diff(horner)(T(), v_t(), i_t())  , T);
+  TTS_EXPR_IS( diff(horner)(v_t(), v_t(), v_t()), v_t);
+  TTS_EXPR_IS( diff(horner)(T(), eve::one, T())  , T);
+  TTS_EXPR_IS( diff(horner)(T(), eve::one, T(), T())  , T);
+  TTS_EXPR_IS( diff(horner)(T(), eve::one, v_t(), v_t())  , T);
+  TTS_EXPR_IS( diff(horner)(T(), eve::one, v_t(), int())  , T);
+  TTS_EXPR_IS( diff(horner)(T(), eve::one, v_t(), i_t())  , T);
+  TTS_EXPR_IS( diff(horner)(v_t(), eve::one, v_t(), v_t()), v_t);
+  TTS_EXPR_IS( diff(horner)(T(), (std::array<v_t, 4>())), T());
+  TTS_EXPR_IS( diff(horner)(T(), (std::array<T, 4>())), T());
+
+//    TTS_EXPR_IS( pedantic(diff)(horner)(T(), T())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), T(), T())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), v_t(), v_t())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), v_t(), int())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), v_t(), i_t())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(v_t(), v_t(), v_t()), v_t);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), eve::one, T())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), eve::one, T(), T())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), eve::one, v_t(), v_t())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), eve::one, v_t(), int())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(T(), eve::one, v_t(), i_t())  , T);
+//   TTS_EXPR_IS( pedantic(diff)(horner)(v_t(), eve::one, v_t(), v_t()), v_t);
+//    TTS_EXPR_IS( pedantic(diff)(horner)(T(), (std::array<v_t, 4>())), T());
+};
 
 //============================================================================
 //== diff(horner) tests
@@ -36,7 +78,7 @@ EVE_TEST( "Check behavior of diff(horner) on wide"
   using eve::fma;
   using eve::diff;
   using eve::one;
-//  using v_t = eve::element_type_t<T>;
+  using v_t = eve::element_type_t<T>;
 
   //============================================================================
   //== variadic
@@ -85,7 +127,7 @@ EVE_TEST( "Check behavior of diff(horner) on wide"
     std::array<v_t, 2> tab3 = {2, 3};
     std::array<v_t, 3> tab4 = {2, 3, 4};
 
-    TTS_EQUAL(diff(horner)(a0, one, tab1), T(0));
+   TTS_EQUAL(diff(horner)(a0, one, tab1), T(0));
     TTS_EQUAL(diff(horner)(a0, one, tab2), T(1));
     TTS_EQUAL(diff(horner)(a0, one, tab3), 2*a0+2);
     TTS_EQUAL(diff(horner)(a0, one, tab4), (3*a0*a0+4*a0+3));

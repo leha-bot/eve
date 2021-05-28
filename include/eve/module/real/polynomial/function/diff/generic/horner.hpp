@@ -7,6 +7,7 @@
 //==================================================================================================
 #pragma once
 
+#include <eve/detail/overload.hpp>
 #include <eve/concept/compatible.hpp>
 #include <eve/concept/value.hpp>
 #include <eve/constant/zero.hpp>
@@ -17,6 +18,9 @@
 #include <eve/function/pedantic/fma.hpp>
 #include <eve/function/regular.hpp>
 #include <eve/module/real/polynomial/detail/diff_horner_impl.hpp>
+#include <eve/function/pedantic.hpp>
+#include <eve/function/numeric.hpp>
+#include <eve/function/regular.hpp>
 
 namespace eve::detail
 {
@@ -171,19 +175,21 @@ namespace eve::detail
            range R>
            EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
                                                  , diff_type<1> const &
-                                                 , T0 x, R const &r) noexcept
+                                                 , T0 x, R const &r) noexcept 
+  requires ((compatible_values<T0, typename R::value_type>) && (!simd_value<R>))
   {
-    return diff_horner_impl(regular_type(), x, r);
+    return diff_horner_impl(eve::regular_type(), x, r);
   }
 
   template<value T0,
-           decorator D,
+           typename D,
            range R>
            EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
-                                                 ,  decorated<diff_<1>(D)> const &
+                                                 , decorated<diff_<1>(D)> const &
                                                  , T0 x, R const &r) noexcept
+  requires ((compatible_values<T0, typename R::value_type>) && (!simd_value<R>))
   {
-    return diff_horner_impl(D(), x, r);
+    return diff_horner_impl(decorated<D>(), x, r);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -196,21 +202,24 @@ namespace eve::detail
                                                  , T0 x
                                                  , callable_one_ const &
                                                  , R const &r) noexcept
-  {
-    return diff_horner_impl(regular_type(), x, one, r);
-  }
+  requires ((compatible_values<T0, typename R::value_type>) && (!simd_value<R>))
+ {
+   return diff_horner_impl(regular_type(), x, one, r);
+ }
 
-  template<value T0,
-           decorator D,
+ template<value T0,
+           typename D,
            range R>
            EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
                                                  , decorated<diff_<1>(D)> const &
                                                  , T0 x
                                                  , callable_one_ const &
                                                  , R const &r) noexcept
+  requires ((compatible_values<T0, typename R::value_type>) && (!simd_value<R>))
   {
     return diff_horner_impl(D(), x, one, r);
   }
+
   /////////////////////////////////////////////////////////////////////////
   //== Iterators
   /////////////////////////////////////////////////////////////////////////
@@ -226,7 +235,7 @@ namespace eve::detail
   }
 
   template<value T0,
-           decorator D,
+           typename  D,
            std::input_iterator IT>
   EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
                                         ,  decorated<diff_<1>(D)> const &
@@ -234,7 +243,7 @@ namespace eve::detail
                                         , IT const &first
                                         , IT const &last) noexcept
   {
-    return diff_horner_impl(D(), x, first, last);
+    return diff_horner_impl(decorated<D>(), x, first, last);
   }
   /////////////////////////////////////////////////////////////////////////
   //== Iterators with leading one
@@ -252,16 +261,16 @@ namespace eve::detail
   }
 
   template<value T0,
-           decorator D,
+           typename D,
            std::input_iterator IT>
   EVE_FORCEINLINE constexpr auto horner_(EVE_SUPPORTS(cpu_)
-                                        ,  decorated<diff_<1>(D)> const &
+                                        , decorated<diff_<1>(D)> const &
                                         , T0 x
                                         , callable_one_ const &
                                         , IT const &first
                                         , IT const &last) noexcept
   {
-    return diff_horner_impl(D(), x, one, first, last);
+    return diff_horner_impl(decorated<D>(), x, one, first, last);
   }
 
 }
