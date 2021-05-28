@@ -25,15 +25,18 @@ namespace eve::detail
   //================================================================================================
   //==  N = 0
   template<decorator D,  value T0>
-  EVE_FORCEINLINE constexpr auto diff_horner_impl(D const &, T0 const &) noexcept
+  EVE_FORCEINLINE constexpr
+  auto diff_horner_impl(D const &
+                       , T0 const &) noexcept
   {
     return T0(0);
   }
 
   //==  N = 1
   template<decorator D, value T0, value T1>
-  EVE_FORCEINLINE constexpr auto diff_horner_impl(D const &
-                                            , T0 const &, T1 const &) noexcept
+  EVE_FORCEINLINE constexpr
+  auto diff_horner_impl(D const &
+                       , T0 const &, T1 const &) noexcept
   requires compatible_values<T0, T1>
   {
     using r_t = common_compatible_t<T0, T1>;
@@ -41,24 +44,21 @@ namespace eve::detail
   }
 
   //==  N = 2
-  template<int M, decorator D, value T0, value T1, value T2>
-  EVE_FORCEINLINE constexpr auto diff_horner_impl(D const &
-                                            , T0 const &x, T1 const &a, T2 const & ) noexcept
-  requires compatible_values<T0, T1> && compatible_values<T1, T2>
+  template<auto M, decorator D, value T0, value T1, value T2>
+  EVE_FORCEINLINE constexpr
+  auto diff_horner_impl(D const &
+                       , T0 const &x, T1 const &a, T2 const & ) noexcept
+  requires compatible_values<T0, T1> && compatible_values<T0, T2>
   {
-    using r_t = common_compatible_t<T0, T1>;
+    using r_t = common_compatible_t<T0, T1, T2>;
     if constexpr(M  == 1)      return r_t(a);
     else if constexpr(M == 2)  return r_t(x);
     else                       return zero(as<r_t>());
   }
 
   //==  N >= 3
-  template<auto M,
-           decorator D,
-           value T0,
-           value T1,
-           value T2,
-           value ...Ts>
+  template<auto M, decorator D,
+           value T0, value T1, value T2, value ...Ts>
   EVE_FORCEINLINE constexpr
   auto diff_horner_impl(D const & d
                   , T0 xx, T1 a, T2 b, Ts... args) noexcept
