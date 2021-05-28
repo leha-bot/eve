@@ -14,8 +14,11 @@ namespace eve
   //================================================================================================
   // Function decorator - numeric mode
   struct numeric_
-  {
-    template<typename D> static constexpr auto combine( D const& ) noexcept =delete;
+ {
+    template<auto N> static constexpr auto combine( decorated<diff_<N>()> const& ) noexcept
+    {
+      return decorated<diff_<N>(numeric_)>{};
+    }
   };
 
   using numeric_type = decorated<numeric_()>;

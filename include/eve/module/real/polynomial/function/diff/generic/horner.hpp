@@ -122,7 +122,7 @@ namespace eve::detail
               , decorated<diff_<N>(D)> const &
               , T0 x, T1 a, T2 b, Ts... args) noexcept
   {
-    return diff_horner_impl<N>(decorated<D>(), x, a, b, args...);
+    return diff_horner_impl<N>(decorated<D()>(), x, a, b, args...);
   }
 
   //================================================================================================
@@ -183,7 +183,7 @@ namespace eve::detail
               , T0 x, R const &r) noexcept
   requires ((compatible_values<T0, typename R::value_type>) && (!value<R>))
   {
-    return diff_horner_impl(decorated<D>(), x, r);
+    return diff_horner_impl(decorated<D()>(), x, r);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -209,7 +209,7 @@ namespace eve::detail
                                        , R const &r) noexcept
   requires ((compatible_values<T0, typename R::value_type>) && (!value<R>))
   {
-    return diff_horner_impl(decorated<D>(), x, one, r);
+    return diff_horner_impl(decorated<D()>(), x, one, r);
   }
 
   /////////////////////////////////////////////////////////////////////////
@@ -234,7 +234,7 @@ namespace eve::detail
               , IT const &first
               , IT const &last) noexcept
   {
-    return diff_horner_impl(decorated<D>(), x, first, last);
+    return diff_horner_impl(decorated<D()>(), x, first, last);
   }
 
 /////////////////////////////////////////////////////////////////////////
@@ -261,7 +261,7 @@ namespace eve::detail
               , IT const &first
               , IT const &last) noexcept
   {
-    return diff_horner_impl(decorated<D>(), x, one, first, last);
+    return diff_horner_impl(decorated<D()>(), x, one, first, last);
   }
 
 }
