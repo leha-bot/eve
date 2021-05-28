@@ -38,8 +38,8 @@ namespace eve::detail
                                         , pedantic_type const &
                                         , T0 xx, R1 const & rc
                                         , R2 const & rn) noexcept
-  requires (compatible_values<T0, typename R1::value_type> && (!simd_value<R1>)
-            && compatible_values<T0, typename R2::value_type> && (!simd_value<R2>))
+  requires (compatible_values<T0, typename R1::value_type> && (!value<R1>)
+            && compatible_values<T0, typename R2::value_type> && (!value<R2>))
   {
     return detail::newton_impl(pedantic_type(), xx, rc, rn);
   }

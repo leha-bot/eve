@@ -31,12 +31,18 @@ EVE_TEST_TYPES( "Check return types of newton on wide"
 <typename T>(eve::as_<T>)
 {
   using v_t = eve::element_type_t<T>;
+  using V_t = std::vector<T>;
+  using L_t = std::list<T>;
+  TTS_EXPR_IS( eve::newton(T(), V_t(), V_t())  , T);
+  TTS_EXPR_IS( eve::newton(T(), V_t(), L_t())  , T);
+  TTS_EXPR_IS( eve::newton(T(), L_t(), L_t())  , T);
+  TTS_EXPR_IS( eve::newton(T(), std::begin(V_t()), std::end(V_t()), std::begin(V_t())), T);
+
   using rv_t = std::vector<v_t>;
   using rl_t = std::list<v_t>;
   TTS_EXPR_IS( eve::newton(T(), rv_t(), rv_t())  , T);
   TTS_EXPR_IS( eve::newton(T(), rv_t(), rl_t())  , T);
   TTS_EXPR_IS( eve::newton(T(), rl_t(), rl_t())  , T);
-
   TTS_EXPR_IS( eve::newton(T(), std::begin(rv_t()), std::end(rv_t()), std::begin(rv_t())), T);
 };
 
