@@ -160,7 +160,7 @@ namespace eve::detail
               , callable_one_ const &
               , T1 b, Ts... args) noexcept
   {
-    return diff_horner_impl<N>(decorated<D>(), x, one, b, args...);
+    return diff_horner_impl<N>(decorated<D()>(), x, one, b, args...);
   }
 
   /////////////////////////////////////////////////////////////////////////

@@ -46,8 +46,8 @@ EVE_TEST_TYPES( "Check return types of dif(horner) on wide"
   TTS_EXPR_IS( diff(horner)(T(), eve::one, v_t(), int())  , T);
   TTS_EXPR_IS( diff(horner)(T(), eve::one, v_t(), i_t())  , T);
   TTS_EXPR_IS( diff(horner)(v_t(), eve::one, v_t(), v_t()), v_t);
-  TTS_EXPR_IS( diff(horner)(T(), (std::array<v_t, 4>())), T());
-  TTS_EXPR_IS( diff(horner)(T(), (std::array<T, 4>())), T());
+  TTS_EXPR_IS( diff(horner)(T(), (std::array<v_t, 4>())), T);
+  TTS_EXPR_IS( diff(horner)(T(), (std::array<T, 4>())), T);
 
   TTS_EXPR_IS( pedantic(diff)(horner)(T(), T())  , T);
   TTS_EXPR_IS( pedantic(diff)(horner)(T(), T(), T())  , T);
