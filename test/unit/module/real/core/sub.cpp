@@ -134,4 +134,22 @@ EVE_TEST( "Check behavior of sub on signed types"
   TTS_EQUAL( saturated(sub[a2 > T(64)])(a0, a1), map([](auto e, auto f, auto g) { return  g > 64 ? saturated(sub)(e, f): e; }, a0, a1, a2));
 };
 
-/// TODO waiting for interface simplifications to add scalar tests
+
+//==================================================================================================
+//==  conditional sub tests on floating
+//==================================================================================================
+EVE_TEST( "Check behavior of sub on floating types"
+        , eve::test::simd::ieee_reals
+        , eve::test::generate ( eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::logicals(0, 3)
+                              )
+        )
+  <typename T, typename M>( T a0, T a1, M t)
+{
+  using eve::sub;
+  TTS_EQUAL( sub[t](a0, a1), eve::if_else(t, sub(a0, a1), a0));
+  TTS_EQUAL( eve::to_nearest(sub[t])(a0, a1), eve::if_else(t, eve::to_nearest(sub[t])(a0, a1), a0));
+  TTS_EQUAL( eve::upward(sub[t])(a0, a1), eve::if_else(t, eve::upward(sub[t])(a0, a1), a0));
+  TTS_EQUAL( eve::downward(sub[t])(a0, a1), eve::if_else(t, eve::downward(sub[t])(a0, a1), a0));
+};

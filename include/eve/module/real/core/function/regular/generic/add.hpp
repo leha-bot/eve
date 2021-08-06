@@ -68,5 +68,4 @@ namespace eve::detail
     auto tmp = mask_op( cond, eve::add, a, b);
     return mask_op( cond, eve::round, tmp);
   }
-
 }

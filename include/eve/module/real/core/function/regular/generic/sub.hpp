@@ -48,4 +48,27 @@ namespace eve::detail
     ((that = sub(that,args)),...);
     return that;
   }
+
+  //================================================================================================
+  // Rounded case
+  //================================================================================================
+  template<decorator D, real_value T>
+  EVE_FORCEINLINE T sub_(EVE_SUPPORTS(cpu_), D const &, T a, T b) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    return D()(round)(sub(a, b));
+  }
+
+  //================================================================================================
+  // Rounded masked case
+  //================================================================================================
+  template<conditional_expr C, decorator D, real_value T>
+  EVE_FORCEINLINE T sub_(EVE_SUPPORTS(cpu_), C const &cond, D const &, T a, T b) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    auto tmp = mask_op( cond, eve::sub, a, b);
+    return mask_op( cond, eve::round, tmp);
+  }
 }
