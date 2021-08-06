@@ -10,6 +10,7 @@
 #include <eve/concept/compatible.hpp>
 #include <eve/concept/value.hpp>
 #include <eve/detail/function/conditional.hpp>
+#include <eve/function/round.hpp>
 #include <eve/traits/common_compatible.hpp>
 
 namespace eve::detail
@@ -44,4 +45,28 @@ namespace eve::detail
     ((that = add(that,args)),...);
     return that;
   }
+
+  //================================================================================================
+  // Rounded case
+  //================================================================================================
+  template<decorator D, real_value T>
+  EVE_FORCEINLINE T add_(EVE_SUPPORTS(cpu_), D const &, T a, T b) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    return D()(round)(add(a, b));
+  }
+
+  //================================================================================================
+  // Rounded masked case
+  //================================================================================================
+  template<conditional_expr C, decorator D, real_value T>
+  EVE_FORCEINLINE T add_(EVE_SUPPORTS(cpu_), C const &cond, D const &, T a, T b) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    auto tmp = mask_op( cond, eve::add, a, b);
+    return mask_op( cond, eve::round, tmp);
+  }
+
 }

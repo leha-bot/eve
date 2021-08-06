@@ -78,5 +78,5 @@ namespace eve::detail
       else  if constexpr(c == category::float64x8 ) return _mm512_mask_div_round_pd(src,m,v,w,D::base_type::value);
       else return div_(EVE_RETARGET(cpu_), cx, D(), v, w);
     }
- }
+  }
 }

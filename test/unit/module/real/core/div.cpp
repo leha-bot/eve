@@ -180,4 +180,6 @@ EVE_TEST( "Check behavior of div on floating types"
   using eve::div;
   TTS_EQUAL( div[t](a0, a1), eve::if_else(t, div(a0, a1), a0));
   TTS_EQUAL( eve::to_nearest(div[t])(a0, a1), eve::if_else(t, eve::to_nearest(div[t])(a0, a1), a0));
+  TTS_EQUAL( eve::upward(div[t])(a0, a1), eve::if_else(t, eve::upward(div[t])(a0, a1), a0));
+  TTS_EQUAL( eve::downward(div[t])(a0, a1), eve::if_else(t, eve::downward(div[t])(a0, a1), a0));
 };

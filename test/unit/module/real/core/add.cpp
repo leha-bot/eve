@@ -134,3 +134,22 @@ EVE_TEST( "Check behavior of add on signed types"
   TTS_EQUAL( add[a2 > T(64)](a0, a1), map([](auto e, auto f, auto g) {return g > 64 ? add(e, f) : e ; }, a0, a1, a2));
   TTS_EQUAL( saturated(add[a2 > T(64)])(a0, a1), map([](auto e, auto f, auto g) { return  g > 64 ? saturated(add)(e, f): e; }, a0, a1, a2));
 };
+
+//==================================================================================================
+//==  conditional add tests on floating
+//==================================================================================================
+EVE_TEST( "Check behavior of add on floating types"
+        , eve::test::simd::ieee_reals
+        , eve::test::generate ( eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::logicals(0, 3)
+                              )
+        )
+  <typename T, typename M>( T a0, T a1, M t)
+{
+  using eve::add;
+  TTS_EQUAL( add[t](a0, a1), eve::if_else(t, add(a0, a1), a0));
+  TTS_EQUAL( eve::to_nearest(add[t])(a0, a1), eve::if_else(t, eve::to_nearest(add[t])(a0, a1), a0));
+  TTS_EQUAL( eve::upward(add[t])(a0, a1), eve::if_else(t, eve::upward(add[t])(a0, a1), a0));
+  TTS_EQUAL( eve::downward(add[t])(a0, a1), eve::if_else(t, eve::downward(add[t])(a0, a1), a0));
+};
