@@ -136,7 +136,7 @@ EVE_TEST( "Check behavior of add on signed types"
 };
 
 //==================================================================================================
-//==  conditional add tests on floating
+//==  conditional rounded add tests on floating
 //==================================================================================================
 EVE_TEST( "Check behavior of add on floating types"
         , eve::test::simd::ieee_reals
@@ -149,7 +149,14 @@ EVE_TEST( "Check behavior of add on floating types"
 {
   using eve::add;
   TTS_EQUAL( add[t](a0, a1), eve::if_else(t, add(a0, a1), a0));
-  TTS_EQUAL( eve::to_nearest(add[t])(a0, a1), eve::if_else(t, eve::to_nearest(add[t])(a0, a1), a0));
-  TTS_EQUAL( eve::upward(add[t])(a0, a1), eve::if_else(t, eve::upward(add[t])(a0, a1), a0));
-  TTS_EQUAL( eve::downward(add[t])(a0, a1), eve::if_else(t, eve::downward(add[t])(a0, a1), a0));
+
+  TTS_EQUAL( eve::to_nearest(add[t])(a0, a1), eve::if_else(t, eve::to_nearest(add)(a0, a1), a0));
+  TTS_EQUAL( eve::upward(add[t])(a0, a1), eve::if_else(t, eve::upward(add)(a0, a1), a0));
+  TTS_EQUAL( eve::downward(add[t])(a0, a1), eve::if_else(t, eve::downward(add)(a0, a1), a0));
+  TTS_EQUAL( eve::toward_zero(add[t])(a0, a1), eve::if_else(t, eve::toward_zero(add)(a0, a1), a0));
+
+  TTS_EQUAL( eve::to_nearest(add)(a0, a1), eve::nearest(add(a0, a1)));
+  TTS_EQUAL( eve::upward(add)(a0, a1), eve::ceil(add(a0, a1)));
+  TTS_EQUAL( eve::downward(add)(a0, a1), eve::floor(add(a0, a1)));
+  TTS_EQUAL( eve::toward_zero(add)(a0, a1), eve::trunc(add(a0, a1)));
 };

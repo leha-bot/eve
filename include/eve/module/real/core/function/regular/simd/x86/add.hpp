@@ -61,10 +61,10 @@ namespace eve::detail
   {
     constexpr auto c = categorize<wide<T, N>>();
 
-          if constexpr(c == category::float32x16) return _mm512_add_round_ps(v,w,D::base_type::value);
-    else  if constexpr(c == category::float64x8 ) return _mm512_add_round_pd(v,w,D::base_type::value);
-    else return add_(EVE_RETARGET(cpu_), D(), v, w);
-
+          if constexpr(c == category::float32x16)    return _mm512_add_round_ps(v,w,D::base_type::value);
+    else  if constexpr(c == category::float64x8 )    return _mm512_add_round_pd(v,w,D::base_type::value);
+    else
+      return add_(EVE_RETARGET(cpu_), D(), v, w);
   }
 
   // -----------------------------------------------------------------------------------------------

@@ -98,6 +98,28 @@ namespace eve::detail
     return div(r_t(a0), that);
   }
 
+  //================================================================================================
+  // Rounded case
+  //================================================================================================
+  template<decorator D, floating_real_value T>
+  EVE_FORCEINLINE T div_(EVE_SUPPORTS(cpu_), D const &, T a, T b) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    return D()(round)(div(a, b));
+  }
+
+  //================================================================================================
+  // Rounded masked case
+  //================================================================================================
+  template<conditional_expr C, decorator D, floating_real_value T>
+  EVE_FORCEINLINE T div_(EVE_SUPPORTS(cpu_), C const &cond, D const &, T a, T b) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    auto tmp = mask_op( cond, eve::div, a, b);
+    return mask_op( cond, D()(eve::round), tmp);
+  }
 }
 
 #ifdef EVE_COMP_IS_MSVC

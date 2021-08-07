@@ -129,3 +129,29 @@ EVE_TEST( "Check behavior of fma on all types full range"
 
   TTS_IEEE_EQUAL(fma[t](a0, a1, a2), eve::if_else(t,fma[t](a0, a1, a2), a0));
 };
+
+//==================================================================================================
+//==  conditional fma tests on floating
+//==================================================================================================
+EVE_TEST( "Check behavior of fma on floating types"
+        , eve::test::simd::ieee_reals
+        , eve::test::generate ( eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::logicals(0, 3)
+                              )
+        )
+  <typename T, typename M>( T a0, T a1, T a2, M t)
+{
+  using eve::fma;
+  TTS_EQUAL( fma[t](a0, a1, a2), eve::if_else(t, fma(a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fma[t])(a0, a1, a2), eve::if_else(t, eve::nearest(fma(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::upward(fma[t])(a0, a1, a2), eve::if_else(t, eve::ceil(fma(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::downward(fma[t])(a0, a1, a2), eve::if_else(t, eve::floor(fma(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::toward_zero(fma[t])(a0, a1, a2), eve::if_else(t, eve::trunc(fma(a0, a1, a2)), a0));
+  
+  TTS_EQUAL( eve::to_nearest(fma)(a0, a1, a2), eve::nearest(fma(a0, a1, a2)));
+  TTS_EQUAL( eve::upward(fma)(a0, a1, a2), eve::ceil(fma(a0, a1, a2)));
+  TTS_EQUAL( eve::downward(fma)(a0, a1, a2), eve::floor(fma(a0, a1, a2)));
+  TTS_EQUAL( eve::toward_zero(fma)(a0, a1, a2), eve::trunc(fma(a0, a1, a2)));
+};

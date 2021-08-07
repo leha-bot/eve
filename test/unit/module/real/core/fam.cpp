@@ -107,10 +107,10 @@ EVE_TEST( "Check behavior of fam on all types full range"
 //== fam masked
 //==================================================================================================
 EVE_TEST( "Check behavior of fam on all types full range"
-        , eve::test::simd::all_types
-        , eve::test::generate (  eve::test::randoms(eve::valmin, eve::valmax)
-                              ,  eve::test::randoms(eve::valmin, eve::valmax)
-                              ,  eve::test::randoms(eve::valmin, eve::valmax)
+        , eve::test::simd::ieee_reals
+        , eve::test::generate (  eve::test::randoms(-100, 100)
+                              ,  eve::test::randoms(-100, 100)
+                              ,  eve::test::randoms(-100, 100)
                               ,  eve::test::logicals(0, 3)
                               )
         )
@@ -120,4 +120,7 @@ EVE_TEST( "Check behavior of fam on all types full range"
   using eve::fam;
 
   TTS_IEEE_EQUAL(fam[t](a0, a1, a2), eve::if_else(t,fam[t](a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fam[t])(a0, a1, a2), eve::if_else(t, eve::to_nearest(fam[t])(a0, a1, a2), a0));
+  TTS_EQUAL( eve::upward(fam[t])(a0, a1, a2), eve::if_else(t, eve::upward(fam[t])(a0, a1, a2), a0));
+  TTS_EQUAL( eve::downward(fam[t])(a0, a1, a2), eve::if_else(t, eve::downward(fam[t])(a0, a1, a2), a0));
 };

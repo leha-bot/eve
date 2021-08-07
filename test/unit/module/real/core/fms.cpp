@@ -127,3 +127,24 @@ EVE_TEST( "Check behavior of fms on all types full range"
 
   TTS_IEEE_EQUAL(fms[t](a0, a1, a2), eve::if_else(t,fms[t](a0, a1, a2), a0));
 };
+
+
+//==================================================================================================
+//==  conditional fms tests on floating
+//==================================================================================================
+EVE_TEST( "Check behavior of fms on floating types"
+        , eve::test::simd::ieee_reals
+        , eve::test::generate ( eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::logicals(0, 3)
+                              )
+        )
+  <typename T, typename M>( T a0, T a1, T a2, M t)
+{
+  using eve::fms;
+  TTS_EQUAL( fms[t](a0, a1, a2), eve::if_else(t, fms(a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fms[t])(a0, a1, a2), eve::if_else(t, eve::to_nearest(fms[t])(a0, a1, a2), a0));
+  TTS_EQUAL( eve::upward(fms[t])(a0, a1, a2), eve::if_else(t, eve::upward(fms[t])(a0, a1, a2), a0));
+  TTS_EQUAL( eve::downward(fms[t])(a0, a1, a2), eve::if_else(t, eve::downward(fms[t])(a0, a1, a2), a0));
+};

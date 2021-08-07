@@ -59,6 +59,6 @@ namespace eve::detail
   && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
   {
     auto tmp = mask_op( cond, eve::mul, a, b);
-    return mask_op( cond, eve::round, tmp);
+    return mask_op( cond, D()(eve::round), tmp);
   }
 }
