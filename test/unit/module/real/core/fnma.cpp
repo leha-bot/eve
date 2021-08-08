@@ -125,5 +125,14 @@ EVE_TEST( "Check behavior of fnma on all types full range"
   using eve::as;
   using eve::fnma;
 
-  TTS_IEEE_EQUAL(fnma[t](a0, a1, a2), eve::if_else(t,fnma[t](a0, a1, a2), a0));
+  TTS_IEEE_EQUAL(fnma[t](a0, a1, a2), eve::if_else(t,fnma(a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fnma[t])(a0, a1, a2), eve::if_else(t, eve::nearest(fnma(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::upward(fnma[t])(a0, a1, a2), eve::if_else(t, eve::ceil(fnma(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::downward(fnma[t])(a0, a1, a2), eve::if_else(t, eve::floor(fnma(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::toward_zero(fnma[t])(a0, a1, a2), eve::if_else(t, eve::trunc(fnma(a0, a1, a2)), a0));
+
+  TTS_EQUAL( eve::to_nearest(fnma)(a0, a1, a2), eve::nearest(fnma(a0, a1, a2)));
+  TTS_EQUAL( eve::upward(fnma)(a0, a1, a2), eve::ceil(fnma(a0, a1, a2)));
+  TTS_EQUAL( eve::downward(fnma)(a0, a1, a2), eve::floor(fnma(a0, a1, a2)));
+  TTS_EQUAL( eve::toward_zero(fnma)(a0, a1, a2), eve::trunc(fnma(a0, a1, a2)));
 };

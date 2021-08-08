@@ -144,7 +144,14 @@ EVE_TEST( "Check behavior of fms on floating types"
 {
   using eve::fms;
   TTS_EQUAL( fms[t](a0, a1, a2), eve::if_else(t, fms(a0, a1, a2), a0));
-  TTS_EQUAL( eve::to_nearest(fms[t])(a0, a1, a2), eve::if_else(t, eve::to_nearest(fms[t])(a0, a1, a2), a0));
-  TTS_EQUAL( eve::upward(fms[t])(a0, a1, a2), eve::if_else(t, eve::upward(fms[t])(a0, a1, a2), a0));
-  TTS_EQUAL( eve::downward(fms[t])(a0, a1, a2), eve::if_else(t, eve::downward(fms[t])(a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fms[t])(a0, a1, a2), eve::if_else(t, eve::nearest(fms(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::upward(fms[t])(a0, a1, a2), eve::if_else(t, eve::ceil(fms(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::downward(fms[t])(a0, a1, a2), eve::if_else(t, eve::floor(fms(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::toward_zero(fms[t])(a0, a1, a2), eve::if_else(t, eve::trunc(fms(a0, a1, a2)), a0));
+
+  TTS_EQUAL( eve::to_nearest(fms)(a0, a1, a2), eve::nearest(fms(a0, a1, a2)));
+  TTS_EQUAL( eve::upward(fms)(a0, a1, a2), eve::ceil(fms(a0, a1, a2)));
+  TTS_EQUAL( eve::downward(fms)(a0, a1, a2), eve::floor(fms(a0, a1, a2)));
+  TTS_EQUAL( eve::toward_zero(fms)(a0, a1, a2), eve::trunc(fms(a0, a1, a2)));
+
 };

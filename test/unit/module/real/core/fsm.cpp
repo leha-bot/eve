@@ -119,5 +119,15 @@ EVE_TEST( "Check behavior of fsm on all types full range"
   using eve::as;
   using eve::fsm;
 
-  TTS_IEEE_EQUAL(fsm[t](a0, a1, a2), eve::if_else(t,fsm[t](a0, a1, a2), a0));
+  TTS_IEEE_EQUAL(fsm[t](a0, a1, a2), eve::if_else(t,fsm(a0, a1, a2), a0));
+
+  TTS_EQUAL( eve::to_nearest(fsm[t])(a0, a1,a2), eve::if_else(t, eve::to_nearest(fsm)(a0, a1,a2), a0));
+  TTS_EQUAL( eve::upward(fsm[t])(a0, a1,a2), eve::if_else(t, eve::upward(fsm)(a0, a1,a2), a0));
+  TTS_EQUAL( eve::downward(fsm[t])(a0, a1,a2), eve::if_else(t, eve::downward(fsm)(a0, a1,a2), a0));
+  TTS_EQUAL( eve::toward_zero(fsm[t])(a0, a1,a2), eve::if_else(t, eve::toward_zero(fsm)(a0, a1,a2), a0));
+
+  TTS_EQUAL( eve::to_nearest(fsm)(a0, a1,a2), eve::nearest(fsm(a0, a1,a2)));
+  TTS_EQUAL( eve::upward(fsm)(a0, a1,a2), eve::ceil(fsm(a0, a1,a2)));
+  TTS_EQUAL( eve::downward(fsm)(a0, a1,a2), eve::floor(fsm(a0, a1,a2)));
+  TTS_EQUAL( eve::toward_zero(fsm)(a0, a1,a2), eve::trunc(fsm(a0, a1,a2)));
 };

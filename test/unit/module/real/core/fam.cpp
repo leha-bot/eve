@@ -119,8 +119,16 @@ EVE_TEST( "Check behavior of fam on all types full range"
   using eve::as;
   using eve::fam;
 
-  TTS_IEEE_EQUAL(fam[t](a0, a1, a2), eve::if_else(t,fam[t](a0, a1, a2), a0));
-  TTS_EQUAL( eve::to_nearest(fam[t])(a0, a1, a2), eve::if_else(t, eve::to_nearest(fam[t])(a0, a1, a2), a0));
-  TTS_EQUAL( eve::upward(fam[t])(a0, a1, a2), eve::if_else(t, eve::upward(fam[t])(a0, a1, a2), a0));
-  TTS_EQUAL( eve::downward(fam[t])(a0, a1, a2), eve::if_else(t, eve::downward(fam[t])(a0, a1, a2), a0));
+  TTS_IEEE_EQUAL(fam[t](a0, a1, a2), eve::if_else(t,fam(a0, a1, a2), a0));
+
+  TTS_EQUAL( eve::to_nearest(fam[t])(a0, a1,a2), eve::if_else(t, eve::to_nearest(fam)(a0, a1,a2), a0));
+  TTS_EQUAL( eve::upward(fam[t])(a0, a1,a2), eve::if_else(t, eve::upward(fam)(a0, a1,a2), a0));
+  TTS_EQUAL( eve::downward(fam[t])(a0, a1,a2), eve::if_else(t, eve::downward(fam)(a0, a1,a2), a0));
+  TTS_EQUAL( eve::toward_zero(fam[t])(a0, a1,a2), eve::if_else(t, eve::toward_zero(fam)(a0, a1,a2), a0));
+
+  TTS_EQUAL( eve::to_nearest(fam)(a0, a1,a2), eve::nearest(fam(a0, a1,a2)));
+  TTS_EQUAL( eve::upward(fam)(a0, a1,a2), eve::ceil(fam(a0, a1,a2)));
+  TTS_EQUAL( eve::downward(fam)(a0, a1,a2), eve::floor(fam(a0, a1,a2)));
+  TTS_EQUAL( eve::toward_zero(fam)(a0, a1,a2), eve::trunc(fam(a0, a1,a2)));
+
 };

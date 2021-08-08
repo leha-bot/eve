@@ -103,21 +103,30 @@ EVE_TEST( "Check behavior of fanm on all types full range"
   TTS_IEEE_EQUAL(eve::numeric(fanm)(a0, a1, a2), eve::pedantic(fnma)(a1, a2, a0));
 };
 
+
 //==================================================================================================
-//== fanm masked
+//==  conditional fanm tests on floating
 //==================================================================================================
-EVE_TEST( "Check behavior of fanm on all types full range"
-        , eve::test::simd::all_types
-        , eve::test::generate (  eve::test::randoms(eve::valmin, eve::valmax)
-                              ,  eve::test::randoms(eve::valmin, eve::valmax)
-                              ,  eve::test::randoms(eve::valmin, eve::valmax)
-                              ,  eve::test::logicals(0, 3)
+EVE_TEST( "Check behavior of fanm on floating types"
+        , eve::test::simd::ieee_reals
+        , eve::test::generate ( eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::logicals(0, 3)
                               )
         )
-<typename T, typename M>(  T const& a0, T const& a1, T const& a2, M const & t)
+  <typename T, typename M>( T a0, T a1, T a2, M t)
 {
-  using eve::as;
   using eve::fanm;
+  TTS_EQUAL( fanm[t](a0, a1, a2), eve::if_else(t, fanm(a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fanm[t])(a0, a1, a2), eve::if_else(t, eve::nearest(fanm(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::upward(fanm[t])(a0, a1, a2), eve::if_else(t, eve::ceil(fanm(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::downward(fanm[t])(a0, a1, a2), eve::if_else(t, eve::floor(fanm(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::toward_zero(fanm[t])(a0, a1, a2), eve::if_else(t, eve::trunc(fanm(a0, a1, a2)), a0));
 
-  TTS_IEEE_EQUAL(fanm[t](a0, a1, a2), eve::if_else(t,fanm[t](a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fanm)(a0, a1, a2), eve::nearest(fanm(a0, a1, a2)));
+  TTS_EQUAL( eve::upward(fanm)(a0, a1, a2), eve::ceil(fanm(a0, a1, a2)));
+  TTS_EQUAL( eve::downward(fanm)(a0, a1, a2), eve::floor(fanm(a0, a1, a2)));
+  TTS_EQUAL( eve::toward_zero(fanm)(a0, a1, a2), eve::trunc(fanm(a0, a1, a2)));
+
 };

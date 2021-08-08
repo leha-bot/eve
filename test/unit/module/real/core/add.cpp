@@ -159,4 +159,15 @@ EVE_TEST( "Check behavior of add on floating types"
   TTS_EQUAL( eve::upward(add)(a0, a1), eve::ceil(add(a0, a1)));
   TTS_EQUAL( eve::downward(add)(a0, a1), eve::floor(add(a0, a1)));
   TTS_EQUAL( eve::toward_zero(add)(a0, a1), eve::trunc(add(a0, a1)));
+
+  using r_t = eve::wide < float, eve::fixed<16> >;
+  r_t a(1.2f), b(1.4f);
+  std::cout << "a " << a << std::endl;
+  std::cout << "b " << b << std::endl;
+
+  std::cout << r_t(_mm512_add_round_ps(a, b,_MM_FROUND_TO_POS_INF | _MM_FROUND_NO_EXC)) << std::endl;
+  std::cout << r_t(_mm512_add_round_ps(a, b,_MM_FROUND_TO_NEG_INF | _MM_FROUND_NO_EXC)) << std::endl;
+  std::cout << r_t(_mm512_add_round_ps(a, b,_MM_FROUND_TO_POS_INF | _MM_FROUND_NO_EXC)) << std::endl;
+  std::cout << r_t(_mm512_add_round_ps(a, b,_MM_FROUND_TO_NEAREST_INT | _MM_FROUND_NO_EXC)) << std::endl;
+  std::cout << r_t(_mm512_add_round_ps(a, b,_MM_FROUND_TO_ZERO | _MM_FROUND_NO_EXC)) << std::endl;
 };

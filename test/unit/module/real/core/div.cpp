@@ -179,7 +179,13 @@ EVE_TEST( "Check behavior of div on floating types"
 {
   using eve::div;
   TTS_EQUAL( div[t](a0, a1), eve::if_else(t, div(a0, a1), a0));
-  TTS_EQUAL( eve::to_nearest(div[t])(a0, a1), eve::if_else(t, eve::to_nearest(div[t])(a0, a1), a0));
-  TTS_EQUAL( eve::upward(div[t])(a0, a1), eve::if_else(t, eve::upward(div[t])(a0, a1), a0));
-  TTS_EQUAL( eve::downward(div[t])(a0, a1), eve::if_else(t, eve::downward(div[t])(a0, a1), a0));
+  TTS_EQUAL( eve::to_nearest(div[t])(a0, a1), eve::if_else(t, eve::to_nearest(div)(a0, a1), a0));
+  TTS_EQUAL( eve::upward(div[t])(a0, a1), eve::if_else(t, eve::upward(div)(a0, a1), a0));
+  TTS_EQUAL( eve::downward(div[t])(a0, a1), eve::if_else(t, eve::downward(div)(a0, a1), a0));
+  TTS_EQUAL( eve::toward_zero(div[t])(a0, a1), eve::if_else(t, eve::toward_zero(div)(a0, a1), a0));
+
+  TTS_EQUAL( eve::to_nearest(div)(a0, a1), eve::nearest(div(a0, a1)));
+  TTS_EQUAL( eve::upward(div)(a0, a1), eve::ceil(div(a0, a1)));
+  TTS_EQUAL( eve::downward(div)(a0, a1), eve::floor(div(a0, a1)));
+  TTS_EQUAL( eve::toward_zero(div)(a0, a1), eve::trunc(div(a0, a1)));
 };

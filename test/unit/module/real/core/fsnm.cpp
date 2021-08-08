@@ -104,20 +104,28 @@ EVE_TEST( "Check behavior of fsnm on all types full range"
 };
 
 //==================================================================================================
-//== fsnm masked
+//==  conditional fsnm tests on floating
 //==================================================================================================
-EVE_TEST( "Check behavior of fsnm on all types full range"
-        , eve::test::simd::all_types
-        , eve::test::generate (  eve::test::randoms(eve::valmin, eve::valmax)
-                              ,  eve::test::randoms(eve::valmin, eve::valmax)
-                              ,  eve::test::randoms(eve::valmin, eve::valmax)
-                              ,  eve::test::logicals(0, 3)
+EVE_TEST( "Check behavior of fsnm on floating types"
+        , eve::test::simd::ieee_reals
+        , eve::test::generate ( eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::randoms(-100.0, 100.0)
+                              , eve::test::logicals(0, 3)
                               )
         )
-<typename T, typename M>(  T const& a0, T const& a1, T const& a2, M const & t)
+  <typename T, typename M>( T a0, T a1, T a2, M t)
 {
-  using eve::as;
   using eve::fsnm;
+  TTS_EQUAL( fsnm[t](a0, a1, a2), eve::if_else(t, fsnm(a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fsnm[t])(a0, a1, a2), eve::if_else(t, eve::nearest(fsnm(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::upward(fsnm[t])(a0, a1, a2), eve::if_else(t, eve::ceil(fsnm(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::downward(fsnm[t])(a0, a1, a2), eve::if_else(t, eve::floor(fsnm(a0, a1, a2)), a0));
+  TTS_EQUAL( eve::toward_zero(fsnm[t])(a0, a1, a2), eve::if_else(t, eve::trunc(fsnm(a0, a1, a2)), a0));
 
-  TTS_IEEE_EQUAL(fsnm[t](a0, a1, a2), eve::if_else(t,fsnm[t](a0, a1, a2), a0));
+  TTS_EQUAL( eve::to_nearest(fsnm)(a0, a1, a2), eve::nearest(fsnm(a0, a1, a2)));
+  TTS_EQUAL( eve::upward(fsnm)(a0, a1, a2), eve::ceil(fsnm(a0, a1, a2)));
+  TTS_EQUAL( eve::downward(fsnm)(a0, a1, a2), eve::floor(fsnm(a0, a1, a2)));
+  TTS_EQUAL( eve::toward_zero(fsnm)(a0, a1, a2), eve::trunc(fsnm(a0, a1, a2)));
+
 };

@@ -149,7 +149,14 @@ EVE_TEST( "Check behavior of sub on floating types"
 {
   using eve::sub;
   TTS_EQUAL( sub[t](a0, a1), eve::if_else(t, sub(a0, a1), a0));
-  TTS_EQUAL( eve::to_nearest(sub[t])(a0, a1), eve::if_else(t, eve::to_nearest(sub[t])(a0, a1), a0));
-  TTS_EQUAL( eve::upward(sub[t])(a0, a1), eve::if_else(t, eve::upward(sub[t])(a0, a1), a0));
-  TTS_EQUAL( eve::downward(sub[t])(a0, a1), eve::if_else(t, eve::downward(sub[t])(a0, a1), a0));
+
+  TTS_EQUAL( eve::to_nearest(sub[t])(a0, a1), eve::if_else(t, eve::to_nearest(sub)(a0, a1), a0));
+  TTS_EQUAL( eve::upward(sub[t])(a0, a1), eve::if_else(t, eve::upward(sub)(a0, a1), a0));
+  TTS_EQUAL( eve::downward(sub[t])(a0, a1), eve::if_else(t, eve::downward(sub)(a0, a1), a0));
+  TTS_EQUAL( eve::toward_zero(sub[t])(a0, a1), eve::if_else(t, eve::toward_zero(sub)(a0, a1), a0));
+
+  TTS_EQUAL( eve::to_nearest(sub)(a0, a1), eve::nearest(sub(a0, a1)));
+  TTS_EQUAL( eve::upward(sub)(a0, a1), eve::ceil(sub(a0, a1)));
+  TTS_EQUAL( eve::downward(sub)(a0, a1), eve::floor(sub(a0, a1)));
+  TTS_EQUAL( eve::toward_zero(sub)(a0, a1), eve::trunc(sub(a0, a1)));
 };

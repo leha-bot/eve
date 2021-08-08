@@ -52,27 +52,27 @@ namespace eve::detail
     }
   }
 
-  // -----------------------------------------------------------------------------------------------
-  // masked Rouding case
-  template<decorator D, conditional_expr C, floating_real_scalar_value T, typename N>
-  EVE_FORCEINLINE
-  wide<T, N> fam_(EVE_SUPPORTS(avx512_), C const &cx
-                , D const &, wide<T, N> const &v, wide<T, N> const &w, wide<T, N> const &x) noexcept
-  requires(is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
-  {
-    constexpr auto c = categorize<wide<T, N>>();
+//   // -----------------------------------------------------------------------------------------------
+//   // masked Rouding case
+//   template<decorator D, conditional_expr C, floating_real_scalar_value T, typename N>
+//   EVE_FORCEINLINE
+//   wide<T, N> fam_(EVE_SUPPORTS(avx512_), C const &cx
+//                 , D const &, wide<T, N> const &v, wide<T, N> const &w, wide<T, N> const &x) noexcept
+//   requires(is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+//   {
+//     constexpr auto c = categorize<wide<T, N>>();
 
-    if constexpr( C::is_complete || abi_t<T, N>::is_wide_logical )
-    {
-      return fam_(EVE_RETARGET(cpu_),cx,D(),v,w,x);
-    }
-    else
-    {
-      auto m    = expand_mask(cx,as<wide<T, N>>{}).storage().value;
+//     if constexpr( C::is_complete || abi_t<T, N>::is_wide_logical )
+//     {
+//       return fam_(EVE_RETARGET(cpu_),cx,D(),v,w,x);
+//     }
+//     else
+//     {
+//       auto m    = expand_mask(cx,as<wide<T, N>>{}).storage().value;
 
-            if constexpr(c == category::float32x16) return _mm512_mask3_fmadd_round_ps(v,w,x,m,D::base_type::value);
-      else  if constexpr(c == category::float64x8 ) return _mm512_mask3_fmadd_round_pd(v,w,x,m,D::base_type::value);
-      else return fam_(EVE_RETARGET(cpu_), cx, D(), v, w, x);
-    }
- }
+//             if constexpr(c == category::float32x16) return _mm512_mask3_fmadd_round_ps(v,w,x,m,D::base_type::value);
+//       else  if constexpr(c == category::float64x8 ) return _mm512_mask3_fmadd_round_pd(v,w,x,m,D::base_type::value);
+//       else return fam_(EVE_RETARGET(cpu_), cx, D(), v, w, x);
+//     }
+//  }
 }

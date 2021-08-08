@@ -159,7 +159,13 @@ EVE_TEST( "Check behavior of mul on floating types"
 {
   using eve::mul;
   TTS_EQUAL( mul[t](a0, a1), eve::if_else(t, mul(a0, a1), a0));
-  TTS_EQUAL( eve::to_nearest(mul[t])(a0, a1), eve::if_else(t, eve::to_nearest(mul[t])(a0, a1), a0));
-  TTS_EQUAL( eve::upward(mul[t])(a0, a1), eve::if_else(t, eve::upward(mul[t])(a0, a1), a0));
-  TTS_EQUAL( eve::downward(mul[t])(a0, a1), eve::if_else(t, eve::downward(mul[t])(a0, a1), a0));
+  TTS_EQUAL( eve::to_nearest(mul[t])(a0, a1), eve::if_else(t, eve::to_nearest(mul)(a0, a1), a0));
+  TTS_EQUAL( eve::upward(mul[t])(a0, a1), eve::if_else(t, eve::upward(mul)(a0, a1), a0));
+  TTS_EQUAL( eve::downward(mul[t])(a0, a1), eve::if_else(t, eve::downward(mul)(a0, a1), a0));
+  TTS_EQUAL( eve::toward_zero(mul[t])(a0, a1), eve::if_else(t, eve::toward_zero(mul)(a0, a1), a0));
+
+  TTS_EQUAL( eve::to_nearest(mul)(a0, a1), eve::nearest(mul(a0, a1)));
+  TTS_EQUAL( eve::upward(mul)(a0, a1), eve::ceil(mul(a0, a1)));
+  TTS_EQUAL( eve::downward(mul)(a0, a1), eve::floor(mul(a0, a1)));
+  TTS_EQUAL( eve::toward_zero(mul)(a0, a1), eve::trunc(mul(a0, a1)));
 };

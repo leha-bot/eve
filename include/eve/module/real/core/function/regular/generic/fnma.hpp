@@ -46,4 +46,27 @@ namespace eve::detail
     using r_t =  common_compatible_t<T, U, V>;
     return mask_op(  cond, eve::fnma, r_t(a), r_t(b), r_t(c));
   }
+
+  //================================================================================================
+  // Rounded case
+  //================================================================================================
+  template<decorator D, real_value T>
+  EVE_FORCEINLINE T fnma_(EVE_SUPPORTS(cpu_), D const &, T a, T b, T c) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    return D()(round)(fnma(a, b, c));
+  }
+
+  //================================================================================================
+  // Rounded masked case
+  //================================================================================================
+  template<conditional_expr C, decorator D, real_value T>
+  EVE_FORCEINLINE T fnma_(EVE_SUPPORTS(cpu_), C const &cond, D const &, T a, T b, T c) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    auto tmp = mask_op( cond, eve::fnma, a, b, c);
+    return mask_op( cond, D()(eve::round), tmp);
+  }
 }
