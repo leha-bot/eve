@@ -50,4 +50,27 @@ namespace eve::detail
   {
     return mask_op(  cond, eve::sqrt, t);
   }
+
+  //================================================================================================
+  // Rounded case
+  //================================================================================================
+  template<decorator D, real_value T>
+  EVE_FORCEINLINE T sqrt_(EVE_SUPPORTS(cpu_), D const &, T a) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    return D()(round)(sqrt(a));
+  }
+
+  //================================================================================================
+  // Rounded masked case
+  //================================================================================================
+  template<conditional_expr C, decorator D, real_value T>
+  EVE_FORCEINLINE T sqrt_(EVE_SUPPORTS(cpu_), C const &cond, D const &, T a) noexcept
+  requires  has_native_abi_v<T>
+  && (is_one_of<D>(types<toward_zero_type, downward_type, to_nearest_type, upward_type> {}))
+  {
+    auto tmp = mask_op( cond, eve::sqrt, a);
+    return mask_op( cond, D()(eve::round), tmp);
+  }
 }

@@ -11,6 +11,7 @@
 #include <eve/constant/valmax.hpp>
 #include <eve/function/sqrt.hpp>
 #include <eve/function/rec.hpp>
+#include <eve/function/round.hpp>
 #include <eve/function/diff/sqrt.hpp>
 #include <type_traits>
 #include <cmath>
@@ -52,6 +53,7 @@ EVE_TEST( "Check behavior of sqrt(wide) and diff on  floating types"
   using eve::rec;
   TTS_ULP_EQUAL( eve::sqrt(a0), map([&](auto e) { return std::sqrt(e); }, a0), 2);
   TTS_ULP_EQUAL( diff(eve::sqrt)(a0), map([&](auto e) { return rec(std::sqrt(e)*2); }, a0), 2.5);
+
 };
 
 //==================================================================================================
@@ -59,12 +61,19 @@ EVE_TEST( "Check behavior of sqrt(wide) and diff on  floating types"
 //==================================================================================================
 EVE_TEST( "Check behavior of sqrt[cond](wide) on  floating types"
             , eve::test::simd::ieee_reals
-            , eve::test::generate ( eve::test::randoms(0.0, eve::valmax))
+            , eve::test::generate ( eve::test::randoms(0.0, 100.0))
             )
 <typename T>(T const& a0 )
 {
   using v_t = eve::element_type_t<T>;
   auto val = eve::unsigned_value<v_t> ? (eve::valmax(eve::as<v_t>())/2) : 0;
   using eve::detail::map;
+  using eve::sqrt;
   TTS_ULP_EQUAL( eve::sqrt[a0 < val](a0), map([&](auto e) { return (e < val)? std::sqrt(e) : e; }, a0), 2);
+
+  TTS_EQUAL( eve::to_nearest(sqrt)(a0), eve::nearest(sqrt(a0)));
+  TTS_EQUAL( eve::upward(sqrt)(a0), eve::ceil(sqrt(a0)));
+  TTS_EQUAL( eve::downward(sqrt)(a0), eve::floor(sqrt(a0)));
+  TTS_EQUAL( eve::toward_zero(sqrt)(a0), eve::trunc(sqrt(a0)));
+  std::cout << eve::toward_zero(sqrt)(a0)-sqrt(a0) << std::endl;
 };
